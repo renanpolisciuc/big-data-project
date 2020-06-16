@@ -2,6 +2,8 @@ version: '3.8'
 services:
   jenkins:
     build: ./jenkins
+    privileged: true
+    user: root
     environment:
       NGROK_AUTH_TOKEN: ${NGROK_AUTH_TOKEN:-invalid}
     ports:
@@ -9,5 +11,11 @@ services:
       - 50000:50000
     volumes:
       - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+  service-1:
+    build: ./applications/services/service-1
+    ports:
+      - 8085:8080
 volumes:
   jenkins_home:
