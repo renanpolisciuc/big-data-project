@@ -1,5 +1,5 @@
-def microservice_app_image
-def version
+def service_1_image
+def version_service_1
 pipeline {
     agent any
 
@@ -7,7 +7,7 @@ pipeline {
         stage('Pre-build') {
             steps {
                 script {
-                    version = sh(returnStdout: true, script: 'git rev-parse --short=7 HEAD').trim()
+                    version_service_1 = "1.0.0"
                 }
             }
         }
@@ -15,19 +15,8 @@ pipeline {
             steps {
                 echo 'Building..'
                 script {
-                    dir('./applications/microservice-app') {
-                        microservice_app_image = docker.build("rpolisciuc/microservice-app")
-                    }
-                }
-            }
-        }
-        stage('Test') {
-            steps {
-                script {
-                    dir('./applications/microservice-app') {
-                        microservice_app_image.inside {
-                            sh 'mvn test'
-                        }
+                    dir('./applications/services/service-1') {
+                        service_1_image = docker.build("rpolisciuc/service-1")
                     }
                 }
             }
@@ -36,7 +25,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('', 'dockerhub-credentials') {
-                        microservice_app_image.push(version)
+                        service_1_image.push(version_service_1)
                     }
                 }
             }
